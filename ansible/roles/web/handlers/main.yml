@@ -1,0 +1,11 @@
+- name: restart nginx
+  service: name=nginx state=restarted
+  sudo: yes
+
+# handlers file for nginx-drupal
+- name: validate nginx configuration
+  shell: nginx -t
+
+- name: restart supervisor
+  service: name=supervisor state=restarted
+  sudo: yes

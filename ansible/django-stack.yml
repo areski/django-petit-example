@@ -1,0 +1,26 @@
+---
+# This playbook deploys the whole application stack in this site.
+
+ - name: apply common configuration to all nodes
+   hosts: all
+   user: "{{deploy_user}}"
+   sudo: yes
+
+   roles:
+     - common
+
+ - name: deploy postgresql and configure the databases
+   hosts: dbservers
+   user: "{{deploy_user}}"
+   sudo: yes
+
+   roles:
+     - web
+
+ - name: deploy nginx and configure web servers
+   hosts: webservers
+   user: "{{deploy_user}}"
+   sudo: yes
+
+   roles:
+     - web

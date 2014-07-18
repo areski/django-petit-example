@@ -1,0 +1,39 @@
+upstream app_server_djangoapp {
+  server localhost:8000 fail_timeout=0;
+}
+
+server {
+  listen 80;
+  #listen   [::]:80 default ipv6only=on; ## listen for ipv6
+
+  {% if root_domain_name %}
+  server_name www.{{root_domain_name}};
+
+  access_log /var/log/nginx/{{root_domain_name}}.access.log;
+  error_log /var/log/nginx/{{root_domain_name}}.error.log info;
+  {% else %}
+
+  access_log /var/log/nginx/{{app_name}}.access.log;
+  error_log /var/log/nginx/{{app_name}}.error.log info;
+  {% endif %}
+
+  ssl                  off;
+  keepalive_timeout 5;
+
+  # nginx should serve up static files and never send to the WSGI server
+  location /static {
+    autoindex on;
+    alias {{app_code_dir}}/assets;
+  }
+
+  location / {
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+    proxy_redirect off;
+
+    if (!-f $request_filename) {
+      proxy_pass http://app_server_djangoapp;
+      break;
+    }
+  }
+}

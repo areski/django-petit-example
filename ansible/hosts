@@ -1,0 +1,7 @@
+
+[webservers]
+xxx.170.88.247     ansible_ssh_user=root
+
+[dbservers]
+xxx.170.88.247     ansible_ssh_user=root
+
